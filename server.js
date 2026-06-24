@@ -16,25 +16,36 @@ app.get("/", (req, res) => {
   res.send("Bot is live 🚀");
 });
 app.post("/send-email", async (req, res) => {
-  const { to, subject, message } = req.body;
-
   try {
+    const { to, subject, message } = req.body;
+
+    const safeTo = String(to || "").trim();
+    const safeSubject = String(subject || "").trim();
+    const safeMessage = String(message || "").trim();
+
     const response = await resend.emails.send({
       from: "onboarding@resend.dev",
-      to,
-      subject,
-      text: message,
+      to: safeTo,
+      subject: safeSubject,
+      text: safeMessage,
     });
 
-    res.json({
-      success: true,
-      data: response,
-    });
+    res
+      .status(200)
+      .setHeader("Content-Type", "application/json; charset=utf-8")
+      .json({
+        success: true,
+        data: response,
+      });
+
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error,
-    });
+    res
+      .status(500)
+      .setHeader("Content-Type", "application/json; charset=utf-8")
+      .json({
+        success: false,
+        error: error.message,
+      });
   }
 });
 // START SERVER
