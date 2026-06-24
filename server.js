@@ -27,7 +27,10 @@ app.post("/send-email", async (req, res) => {
       from: "onboarding@resend.dev",
       to: safeTo,
       subject: safeSubject,
-      text: safeMessage,
+
+      html: `
+        <p>${safeMessage}</p>
+      `,
     });
 
     res
